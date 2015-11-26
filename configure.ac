@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([cleantree], [0.1], [don@donm.cc])
-AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_AUX_DIR([config])
 
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 

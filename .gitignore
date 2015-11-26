@@ -1,7 +1,12 @@
 .DS_Store
 .idea
+aclocal.m4
+autom4te.cache
 build
-build-aux
+config
+config.h.in
+configure
+Makefile.in
 tmp
 xcuserdata
 
