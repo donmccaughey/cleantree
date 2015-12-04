@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([cleantree], [0.1], [don@donm.cc])
 AC_CONFIG_AUX_DIR([config])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([1.15 foreign -Wall -Werror])
 
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
