@@ -2,10 +2,12 @@
 .idea
 aclocal.m4
 autom4te.cache
+autoscan.log
 build
 config
 config.h.in
 configure
+configure.scan
 Makefile.in
 tmp
 xcuserdata
