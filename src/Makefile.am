@@ -1,3 +1,4 @@
 bin_PROGRAMS = cleantree
-cleantree_SOURCES = main.c
+cleantree_SOURCES = main.c \
+                    options.h options.c
 
