@@ -45,7 +45,7 @@ print_version(struct ct_options *options);
 struct ct_options *
 ct_options_alloc(int argc, char *argv[])
 {
-    struct ct_options *options = calloc(0, sizeof(struct ct_options));
+    struct ct_options *options = calloc(1, sizeof(struct ct_options));
     if (!options) return NULL;
 
     char *command_name = basename(argv[0]);
