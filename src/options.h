@@ -5,10 +5,14 @@
 #include <stdbool.h>
 
 
+struct ct_path;
+
+
 struct ct_options {
     char *command_name;
     bool error;
     bool help;
+    struct ct_path *root_dir;
     bool version;
 };
 

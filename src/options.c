@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "path.h"
+
 
 static struct option long_options[] = {
     {
@@ -82,6 +84,7 @@ ct_options_free(struct ct_options *options)
 {
     if (options) {
         free(options->command_name);
+        ct_path_free(options->root_dir);
         free(options);
     }
 }
@@ -133,6 +136,23 @@ get_options(struct ct_options *options, int argc, char *argv[])
     if (remaining_arg_count < 2) {
         options->error = true;
         fprintf(stderr, "%s: expected one or more FILE_TO_KEEP arguments\n", options->command_name);
+        print_help(options);
+        return 0;
+    }
+
+    options->root_dir = ct_path_alloc(NULL, argv[optind]);
+    if (!options->root_dir) return -1; 
+    if (!options->root_dir->exists) {
+        options->error = true;
+        fprintf(stderr, "%s: ROOT_DIR \"%s\" does not exist\n",
+                options->command_name, options->root_dir->given_path);
+        print_help(options);
+        return 0;
+    }
+    if (!options->root_dir->is_dir) {
+        options->error = true;
+        fprintf(stderr, "%s: ROOT_DIR \"%s\" is not a directory\n",
+                options->command_name, options->root_dir->given_path);
         print_help(options);
         return 0;
     }
