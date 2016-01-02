@@ -125,12 +125,18 @@ get_options(struct ct_options *options, int argc, char *argv[])
 
     int remaining_arg_count = argc - optind;
     
-    if (0 == remaining_arg_count) {
+    if (remaining_arg_count < 1) {
         options->error = true;
         fprintf(stderr, "%s: expected ROOT_DIR argument\n", options->command_name);
+    }
+
+    if (remaining_arg_count < 2) {
+        options->error = true;
+        fprintf(stderr, "%s: expected one or more FILE_TO_KEEP arguments\n", options->command_name);
         print_help(options);
         return 0;
     }
+
     return 0;
 }
 
@@ -141,7 +147,7 @@ print_help(struct ct_options *options)
     FILE *out = stdout;
     if (options->error) out = stderr;
 
-    fprintf(out, "Usage: %s [OPTIONS]... ROOT_DIR [FILES_TO_KEEP]...\n", options->command_name);
+    fprintf(out, "Usage: %s [OPTIONS]... ROOT_DIR FILE_TO_KEEP...\n", options->command_name);
     fprintf(out, "Remove unexpected files from a directory tree.\n");
     fprintf(out, "\n");
     fprintf(out, "  -h, --help          display this help message and exit\n");
