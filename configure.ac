@@ -26,5 +26,6 @@ AC_CHECK_FUNCS([strcasecmp])
 AC_CHECK_FUNCS([strdup])
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+                 src/Makefile
+                 test/Makefile])
 AC_OUTPUT

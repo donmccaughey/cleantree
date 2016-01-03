@@ -1,3 +1,3 @@
 EXTRA_DIST = LICENSE README.md
-SUBDIRS = src
+SUBDIRS = src test
 
