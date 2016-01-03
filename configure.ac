@@ -5,7 +5,7 @@ AC_PREREQ([2.69])
 AC_INIT([cleantree], [0.1], [don@donm.cc])
 AC_CONFIG_AUX_DIR([config])
 
-AM_INIT_AUTOMAKE([1.14 foreign -Wall -Werror])
+AM_INIT_AUTOMAKE([1.14 foreign subdir-objects -Wall -Werror])
 
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -25,7 +25,5 @@ AC_CHECK_HEADERS([stdlib.h])
 AC_CHECK_FUNCS([strcasecmp])
 AC_CHECK_FUNCS([strdup])
 
-AC_CONFIG_FILES([Makefile
-                 src/Makefile
-                 test/Makefile])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
