@@ -3,7 +3,8 @@ EXTRA_DIST = LICENSE README.md
 bin_PROGRAMS = cleantree
 cleantree_SOURCES = src/main.c \
                     src/options.h src/options.c \
-                    src/path.h src/path.c
+                    src/path.h src/path.c \
+                    src/path_set.h src/path_set.c
 
 check_SCRIPTS = test/no_args.sh \
                 test/one_arg.sh \
