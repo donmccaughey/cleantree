@@ -1,13 +1,13 @@
 cleantree
 =========
 
-Remove extraneous files from a directory tree.
+Remove extraneous files and directories from a directory tree.
 
 `cleantree` walks a directory tree starting from a _root directory_ and 
-removes all files **not** on a list of _files to keep_.
+removes all files and directories **not** on a list of _paths to keep_.
 
-    Usage: cleantree [OPTIONS]... ROOT_DIR FILE_TO_KEEP...
-    Remove unexpected files from a directory tree.
+    Usage: cleantree [OPTIONS]... ROOT_DIR PATH_TO_KEEP...
+    Remove unexpected files and directories from a directory tree.
 
       -h, --help          display this help message and exit
       -V, --version       display the version number and exit
