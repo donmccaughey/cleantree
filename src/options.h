@@ -6,12 +6,14 @@
 
 
 struct ct_path;
+struct ct_path_set;
 
 
 struct ct_options {
     char *command_name;
     bool error;
     bool help;
+    struct ct_path_set *paths_to_keep;
     struct ct_path *root_dir;
     bool version;
 };

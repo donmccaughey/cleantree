@@ -3,7 +3,7 @@
 status=0
 touch root_file
 
-if ./cleantree root_file file1
+if ./cleantree root_file root_file/file1
 then
     status=1
 fi

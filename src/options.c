@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "path.h"
+#include "path_set.h"
 
 
 static struct option long_options[] = {
@@ -84,6 +85,7 @@ ct_options_free(struct ct_options *options)
 {
     if (options) {
         free(options->command_name);
+        ct_path_set_free(options->paths_to_keep);
         ct_path_free(options->root_dir);
         free(options);
     }
@@ -139,7 +141,7 @@ get_options(struct ct_options *options, int argc, char *argv[])
         print_help(options);
         return 0;
     }
-
+    
     options->root_dir = ct_path_alloc(NULL, argv[optind]);
     if (!options->root_dir) return -1; 
     if (!options->root_dir->exists) {
@@ -153,6 +155,31 @@ get_options(struct ct_options *options, int argc, char *argv[])
         options->error = true;
         fprintf(stderr, "%s: ROOT_DIR \"%s\" is not a directory\n",
                 options->command_name, options->root_dir->given_path);
+        print_help(options);
+        return 0;
+    }
+
+    options->paths_to_keep = ct_path_set_alloc(options->root_dir);
+    if (!options->paths_to_keep) return -1;
+
+    for (int i = optind + 1; i < argc; ++i) {
+        struct ct_path *path_to_keep = ct_path_alloc(NULL, argv[i]);
+        if (!path_to_keep) return -1;
+        
+        enum ct_path_set_error error;
+        int result = ct_path_set_add_path(options->paths_to_keep, path_to_keep, &error);
+        if (-1 == result) {
+            if (ct_path_set_error_errno == error) return -1;
+            if (ct_path_set_error_not_under_root_dir == error) {
+                options->error = true;
+                fprintf(stderr, "%s: \"%s\" is not under ROOT_DIR \"%s\"\n",
+                        options->command_name, path_to_keep->given_path,
+                        options->root_dir->given_path);
+            }
+        }
+        ct_path_free(path_to_keep);
+    }
+    if (options->error) {
         print_help(options);
         return 0;
     }
