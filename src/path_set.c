@@ -5,7 +5,16 @@
 
 #include "path.h"
 
-#include <stdio.h>
+
+static int
+compare_paths(void const *first, void const *second)
+{
+    struct ct_path const *const *path1 = first;
+    struct ct_path const *const *path2 = second;
+    return ct_path_compare_path(*path1, *path2);
+}
+
+
 int
 ct_path_set_add_path(struct ct_path_set *path_set,
                      struct ct_path const *path,
@@ -20,9 +29,21 @@ ct_path_set_add_path(struct ct_path_set *path_set,
         *error = ct_path_set_error_errno;
         return -1;
     }
+    if (ct_path_equals_path(path, path_set->root_dir)) {
+        *error = ct_path_set_error_path_equals_root_dir;
+        return -1;
+    }
     if (!ct_path_is_under_path(path, path_set->root_dir)) {
         *error = ct_path_set_error_not_under_root_dir;
         return -1;
+    }
+    if (path_set->count) {
+        void *found_path = bsearch(&path, path_set->paths, path_set->count, 
+                                   sizeof(path_set->paths[0]), compare_paths);
+        if (found_path) {
+            *error = ct_path_set_error_duplicate_path;
+            return -1;
+        }
     }
 
     int new_index = path_set->count;
@@ -41,6 +62,11 @@ ct_path_set_add_path(struct ct_path_set *path_set,
         return -1;
     }
     path_set->count = new_count;
+
+    if (path_set->count > 1) {
+        qsort(path_set->paths, path_set->count, sizeof(path_set->paths[0]),
+              compare_paths);
+    }
 
     return 0;
 }

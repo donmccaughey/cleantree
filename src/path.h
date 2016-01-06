@@ -23,6 +23,10 @@ ct_path_alloc_copy(struct ct_path const *path);
 void
 ct_path_free(struct ct_path *path);
 
+int
+ct_path_compare_path(struct ct_path const *path,
+                     struct ct_path const *other);
+
 bool
 ct_path_equals_path(struct ct_path const *path,
                     struct ct_path const *other);

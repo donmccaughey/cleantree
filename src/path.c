@@ -109,6 +109,16 @@ ct_path_alloc_copy(struct ct_path const *path)
 }
 
 
+int
+ct_path_compare_path(struct ct_path const *path,
+                     struct ct_path const *other)
+{
+    if (!path || !other) return -1;
+
+    return strcmp(path->abs_path, other->abs_path);
+}
+
+
 void
 ct_path_free(struct ct_path *path)
 {

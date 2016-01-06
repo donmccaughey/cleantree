@@ -121,6 +121,28 @@ test_path_alloc_with_root_working_dir(void)
 
 
 void
+test_path_compare_path(void)
+{
+    struct ct_path *path1 = ct_path_alloc("/tmp", "foo");
+    struct ct_path *path2 = ct_path_alloc("/var", "/tmp/foo");
+    struct ct_path *path3 = ct_path_alloc("/tmp", "bar");
+
+    assert(0 == ct_path_compare_path(path1, path1));
+    assert(0 == ct_path_compare_path(path2, path2));
+    
+    assert(0 == ct_path_compare_path(path1, path2));
+    assert(0 == ct_path_compare_path(path2, path1));
+
+    assert(ct_path_compare_path(path1, path3) > 0);
+    assert(ct_path_compare_path(path3, path1) < 0);
+
+    ct_path_free(path3);
+    ct_path_free(path2);
+    ct_path_free(path1);
+}
+
+
+void
 test_path_equals_path(void)
 {
     struct ct_path *path1 = ct_path_alloc("/tmp", "foo");
@@ -173,6 +195,7 @@ main(int argc, char *argv[])
     test_path_alloc_with_abs_given_path();
     test_path_alloc_with_relative_given_path();
     test_path_alloc_with_root_working_dir();
+    test_path_compare_path();
     test_path_equals_path();
     test_path_is_under_path();
     return EXIT_SUCCESS;

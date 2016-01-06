@@ -169,12 +169,25 @@ get_options(struct ct_options *options, int argc, char *argv[])
         enum ct_path_set_error error;
         int result = ct_path_set_add_path(options->paths_to_keep, path_to_keep, &error);
         if (-1 == result) {
-            if (ct_path_set_error_errno == error) return -1;
-            if (ct_path_set_error_not_under_root_dir == error) {
-                options->error = true;
-                fprintf(stderr, "%s: \"%s\" is not under ROOT_DIR \"%s\"\n",
-                        options->command_name, path_to_keep->given_path,
-                        options->root_dir->given_path);
+            switch (error) {
+                case ct_path_set_error_errno:
+                    return -1;
+                case ct_path_set_error_not_under_root_dir:
+                    options->error = true;
+                    fprintf(stderr, "%s: \"%s\" is not under ROOT_DIR \"%s\"\n",
+                            options->command_name, path_to_keep->given_path,
+                            options->root_dir->given_path);
+                    break;
+                case ct_path_set_error_path_equals_root_dir:
+                    fprintf(stderr, "%s: \"%s\" is the ROOT_DIR, skipped\n",
+                            options->command_name, path_to_keep->given_path);
+                    break;
+                case ct_path_set_error_duplicate_path:
+                    fprintf(stderr, "%s: \"%s\" is a duplicate, skipped\n",
+                            options->command_name, path_to_keep->given_path);
+                    break;
+                default:
+                    return -1;
             }
         }
         ct_path_free(path_to_keep);
