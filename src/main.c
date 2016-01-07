@@ -43,6 +43,20 @@ main(int argc, char *argv[])
         printf("    %s\n", paths_found->paths[i]->abs_path);
     }
 
+    struct ct_path_set *paths_to_remove = ct_path_set_alloc_difference(paths_found, 
+                                                                       options->paths_to_keep);
+    if (!paths_to_remove) {
+        perror(options->command_name);
+        return EXIT_FAILURE;
+    }
+
+    printf("%i paths to remove\n", paths_to_remove->count);
+    for (int i = 0; i < paths_to_remove->count; ++i) {
+        printf("    %s\n", paths_to_remove->paths[i]->abs_path);
+    }
+
+    // TODO: remove paths
+
     ct_path_set_free(paths_found);
     ct_options_free(options);
     return EXIT_SUCCESS;

@@ -2,6 +2,9 @@
 #define CLEANTREE_PATH_SET_H_INCLUDED
 
 
+#include <stdbool.h>
+
+
 struct ct_path;
 
 
@@ -24,6 +27,10 @@ struct ct_path_set {
 struct ct_path_set *
 ct_path_set_alloc(struct ct_path const *root_dir);
 
+struct ct_path_set *
+ct_path_set_alloc_difference(struct ct_path_set const *path_set,
+                             struct ct_path_set const *path_set_to_remove);
+
 void
 ct_path_set_free(struct ct_path_set *path_set);
 
@@ -31,6 +38,10 @@ int
 ct_path_set_add_path(struct ct_path_set *path_set,
                      struct ct_path const *path,
                      enum ct_path_set_error *error);
+
+bool
+ct_path_set_contains_path(struct ct_path_set const *path_set,
+                          struct ct_path const *path);
 
 int
 ct_path_set_find_all(struct ct_path_set *path_set);

@@ -86,13 +86,9 @@ ct_path_set_add_path(struct ct_path_set *path_set,
         *error = ct_path_set_error_not_under_root_dir;
         return -1;
     }
-    if (path_set->count) {
-        void *found_path = bsearch(&path, path_set->paths, path_set->count, 
-                                   sizeof(path_set->paths[0]), compare_paths);
-        if (found_path) {
-            *error = ct_path_set_error_duplicate_path;
-            return -1;
-        }
+    if (path_set->count && ct_path_set_contains_path(path_set, path)) {
+        *error = ct_path_set_error_duplicate_path;
+        return -1;
     }
 
     int new_index = path_set->count;
@@ -140,6 +136,37 @@ ct_path_set_alloc(struct ct_path const *root_dir)
     }
 
     return path_set;
+}
+
+
+struct ct_path_set *
+ct_path_set_alloc_difference(struct ct_path_set const *path_set,
+                             struct ct_path_set const *path_set_to_remove)
+{
+    struct ct_path_set *difference = ct_path_set_alloc(path_set->root_dir);
+    if (!difference) return NULL;
+    
+    for (int i = 0; i < path_set->count; ++i) {
+        if (!ct_path_set_contains_path(path_set_to_remove, path_set->paths[i])) {
+            enum ct_path_set_error error;
+            int result = ct_path_set_add_path(difference, path_set->paths[i], &error);
+            if (-1 == result) {
+                ct_path_set_free(difference);
+                return NULL;
+            }
+        }
+    }
+    return difference;
+}
+
+
+bool
+ct_path_set_contains_path(struct ct_path_set const *path_set,
+                          struct ct_path const *path)
+{
+    void *found_path = bsearch(&path, path_set->paths, path_set->count, 
+                               sizeof(path_set->paths[0]), compare_paths);
+    return NULL != found_path;
 }
 
 
