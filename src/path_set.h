@@ -32,6 +32,9 @@ ct_path_set_add_path(struct ct_path_set *path_set,
                      struct ct_path const *path,
                      enum ct_path_set_error *error);
 
+int
+ct_path_set_find_all(struct ct_path_set *path_set);
+
 
 #endif
 

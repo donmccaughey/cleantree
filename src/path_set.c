@@ -1,7 +1,9 @@
 #include "path_set.h"
 
+#include <dirent.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "path.h"
 
@@ -12,6 +14,53 @@ compare_paths(void const *first, void const *second)
     struct ct_path const *const *path1 = first;
     struct ct_path const *const *path2 = second;
     return ct_path_compare_path(*path1, *path2);
+}
+
+
+static int
+find_all_children(struct ct_path_set *path_set, struct ct_path const *path)
+{
+    DIR *dir = opendir(path->abs_path);
+    if (!dir) return -1;
+
+    struct dirent *entry;
+    errno = 0;
+    while ((entry = readdir(dir))) {
+        if (0 == strcmp(".", entry->d_name)) continue;
+        if (0 == strcmp("..", entry->d_name)) continue;
+
+        struct ct_path *child = ct_path_alloc(path->abs_path, entry->d_name);
+        if (!child) {
+            closedir(dir);
+            return -1;
+        }
+
+        enum ct_path_set_error error;
+        int result = ct_path_set_add_path(path_set, child, &error);
+        if (-1 == result) {
+            ct_path_free(child);
+            closedir(dir);
+            return -1;
+        }
+
+        if (DT_DIR == entry->d_type) {
+            int result = find_all_children(path_set, child);
+            if (-1 == result) {
+                ct_path_free(child);
+                closedir(dir);
+                return -1;
+            }
+        } else if (DT_LNK == entry->d_type) {
+            // TODO: handle symlinks
+            ct_path_free(child);
+            closedir(dir);
+            return -1;
+        }
+
+        ct_path_free(child);
+    }
+    closedir(dir);
+    return 0;
 }
 
 
@@ -91,6 +140,17 @@ ct_path_set_alloc(struct ct_path const *root_dir)
     }
 
     return path_set;
+}
+
+
+int
+ct_path_set_find_all(struct ct_path_set *path_set)
+{
+    if (!path_set) {
+        errno = EINVAL;
+        return -1;
+    }
+    return find_all_children(path_set, path_set->root_dir);
 }
 
 
