@@ -20,6 +20,9 @@ ct_path_alloc(char const *working_dir, char const *given_path);
 struct ct_path *
 ct_path_alloc_copy(struct ct_path const *path);
 
+struct ct_path *
+ct_path_alloc_dir(struct ct_path const *path);
+
 void
 ct_path_free(struct ct_path *path);
 

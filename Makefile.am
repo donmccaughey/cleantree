@@ -21,7 +21,10 @@ check_SCRIPTS = test/no_args.sh \
                 test/three_args.sh \
                 test/three_args_with_one_not_under_root.sh \
                 test/three_args_with_root_dir.sh \
-                test/three_args_with_duplicate.sh
+                test/three_args_with_duplicate.sh \
+                test/remove_files.sh \
+                test/remove_dirs.sh \
+                test/remove_dirs_and_files.sh
 EXTRA_DIST += $(check_SCRIPTS)
 TESTS = $(check_PROGRAMS) $(check_SCRIPTS)
 

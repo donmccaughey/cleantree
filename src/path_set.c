@@ -9,6 +9,34 @@
 
 
 static int
+compare_paths(void const *first, void const *second);
+
+
+static int
+add_path(struct ct_path_set *path_set, struct ct_path const *path)
+{
+    int new_index = path_set->count;
+    int new_count = path_set->count + 1;
+    size_t new_size = new_count * sizeof(struct ct_path *);
+
+    struct ct_path **new_paths = realloc(path_set->paths, new_size);
+    if (!new_paths) return -1;
+    path_set->paths = new_paths;
+
+    path_set->paths[new_index] = ct_path_alloc_copy(path);
+    if (!path_set->paths[new_index]) return -1;
+
+    path_set->count = new_count;
+    if (path_set->count > 1) {
+        qsort(path_set->paths, path_set->count, sizeof(path_set->paths[0]),
+              compare_paths);
+    }
+
+    return 0;
+}
+
+
+static int
 compare_paths(void const *first, void const *second)
 {
     struct ct_path const *const *path1 = first;
@@ -91,26 +119,26 @@ ct_path_set_add_path(struct ct_path_set *path_set,
         return -1;
     }
 
-    int new_index = path_set->count;
-    int new_count = path_set->count + 1;
-    size_t new_size = new_count * sizeof(struct ct_path *);
-    struct ct_path **new_paths = realloc(path_set->paths, new_size);
-    if (!new_paths) {
+    int result = add_path(path_set, path);
+    if (-1 == result) {
         *error = ct_path_set_error_errno;
         return -1;
     }
 
-    path_set->paths = new_paths;
-    path_set->paths[new_index] = ct_path_alloc_copy(path);
-    if (!path_set->paths[new_index]) {
+    struct ct_path *dir_path = ct_path_alloc_dir(path);
+    if (!dir_path) {
         *error = ct_path_set_error_errno;
         return -1;
     }
-    path_set->count = new_count;
 
-    if (path_set->count > 1) {
-        qsort(path_set->paths, path_set->count, sizeof(path_set->paths[0]),
-              compare_paths);
+    result = ct_path_set_add_path(path_set, dir_path, error);
+    ct_path_free(dir_path);
+    if (-1 == result) {
+        switch (*error) {
+            case ct_path_set_error_path_equals_root_dir: break;
+            case ct_path_set_error_duplicate_path: break;
+            default: return -1;
+        }
     }
 
     return 0;
@@ -148,8 +176,7 @@ ct_path_set_alloc_difference(struct ct_path_set const *path_set,
     
     for (int i = 0; i < path_set->count; ++i) {
         if (!ct_path_set_contains_path(path_set_to_remove, path_set->paths[i])) {
-            enum ct_path_set_error error;
-            int result = ct_path_set_add_path(difference, path_set->paths[i], &error);
+            int result = add_path(difference, path_set->paths[i]);
             if (-1 == result) {
                 ct_path_set_free(difference);
                 return NULL;

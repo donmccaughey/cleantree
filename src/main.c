@@ -1,6 +1,7 @@
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "options.h"
 #include "path.h"
@@ -55,7 +56,29 @@ main(int argc, char *argv[])
         printf("    %s\n", paths_to_remove->paths[i]->abs_path);
     }
 
-    // TODO: remove paths
+    for (int i = 0; i < paths_to_remove->count; ++i) {
+        if (paths_to_remove->paths[i]->is_dir) continue;
+        
+        printf("%s: remove file %s\n", options->command_name, paths_to_remove->paths[i]->abs_path);
+        int result = unlink(paths_to_remove->paths[i]->abs_path);
+        if (-1 == result) {
+            // TODO: don't halt on unlink error and inform user
+            perror(options->command_name);
+            return EXIT_FAILURE;
+        }
+    }
+
+    for (int i = paths_to_remove->count - 1; i >= 0; --i) {
+        if (!paths_to_remove->paths[i]->is_dir) continue;
+
+        printf("%s: remove directory %s\n", options->command_name, paths_to_remove->paths[i]->abs_path);
+        int result = rmdir(paths_to_remove->paths[i]->abs_path);
+        if (-1 == result) {
+            // TODO: don't halt on rmdir error and inform user
+            perror(options->command_name);
+            return EXIT_FAILURE;
+        }
+    }
 
     ct_path_set_free(paths_found);
     ct_options_free(options);

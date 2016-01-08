@@ -1,6 +1,7 @@
 #include "path.h"
 
 #include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -106,6 +107,26 @@ ct_path_alloc_copy(struct ct_path const *path)
     }
 
     return copy;
+}
+
+
+struct ct_path *
+ct_path_alloc_dir(struct ct_path const *path)
+{
+    if (!path) {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    char *abs_path = strdup(path->abs_path);
+    if (!abs_path) return NULL;
+
+    struct ct_path *dir_path = NULL;
+    char *dir = dirname(abs_path);
+    if (dir) dir_path = ct_path_alloc(NULL, dir);
+
+    free(abs_path);
+    return dir_path;
 }
 
 
