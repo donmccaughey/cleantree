@@ -9,7 +9,7 @@
 void
 test_path_set_alloc(void)
 {
-    struct ct_path *root_dir = ct_path_alloc(NULL, "/root/dir");
+    struct ct_path *root_dir = ct_path_alloc(NULL, "/tmp/dir");
     struct ct_path_set *path_set = ct_path_set_alloc(root_dir);
 
     assert(path_set);
@@ -27,12 +27,12 @@ test_path_set_alloc(void)
 void
 test_path_set_add(void)
 {
-    struct ct_path *root_dir = ct_path_alloc(NULL, "/root/dir");
+    struct ct_path *root_dir = ct_path_alloc(NULL, "/tmp/dir");
     struct ct_path_set *path_set = ct_path_set_alloc(root_dir);
-    struct ct_path *dir1 = ct_path_alloc(NULL, "/root/dir/dir1");
-    struct ct_path *dir2 = ct_path_alloc(NULL, "/tmp");
-    struct ct_path *file1 = ct_path_alloc(NULL, "/root/dir/file1");
-    struct ct_path *file2 = ct_path_alloc(NULL, "/root/dir/dir1/file2");
+    struct ct_path *dir1 = ct_path_alloc(NULL, "/tmp/dir/dir1");
+    struct ct_path *dir2 = ct_path_alloc(NULL, "/var");
+    struct ct_path *file1 = ct_path_alloc(NULL, "/tmp/dir/file1");
+    struct ct_path *file2 = ct_path_alloc(NULL, "/tmp/dir/dir1/file2");
 
     enum ct_path_set_error error;
     int result = ct_path_set_add_path(path_set, dir1, &error);
