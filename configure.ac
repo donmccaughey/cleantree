@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CC_C99
 
 # Checks for libraries.
 
